@@ -1,0 +1,83 @@
+DenseNet-121 Results
+=======================
+
+Test Images: 480
+
+Overall Test Results
+--------------------
+Accuracy:  0.9917
+Precision: 0.9919
+Recall:    0.9917
+F1 Score:  0.9917
+
+Per-Class Results
+-----------------
+              precision    recall  f1-score   support
+
+       clean     1.0000    0.9875    0.9937        80
+defocus_blur     1.0000    1.0000    1.0000        80
+    gaussian     0.9639    1.0000    0.9816        80
+     impulse     1.0000    0.9875    0.9937        80
+ motion_blur     0.9877    1.0000    0.9938        80
+        shot     1.0000    0.9750    0.9873        80
+
+    accuracy                         0.9917       480
+   macro avg     0.9919    0.9917    0.9917       480
+weighted avg     0.9919    0.9917    0.9917       480
+
+Confusion Matrix
+----------------
+Class order: ['clean', 'defocus_blur', 'gaussian', 'impulse', 'motion_blur', 'shot']
+
+[[79  0  0  0  1  0]
+ [ 0 80  0  0  0  0]
+ [ 0  0 80  0  0  0]
+ [ 0  0  1 79  0  0]
+ [ 0  0  0  0 80  0]
+ [ 0  0  2  0  0 78]]
+
+Accuracy by Severity
+--------------------
+Severity 1: 78/80 (0.9750)
+Severity 2: 79/80 (0.9875)
+Severity 3: 80/80 (1.0000)
+Severity 4: 80/80 (1.0000)
+Severity 5: 80/80 (1.0000)
+
+Accuracy by Corruption + Severity
+-------------------------
+
+DEFOCUS_BLUR
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+GAUSSIAN
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+IMPULSE
+Severity 1: 15/16 (0.9375)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+MOTION_BLUR
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+SHOT
+Severity 1: 15/16 (0.9375)
+Severity 2: 15/16 (0.9375)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)

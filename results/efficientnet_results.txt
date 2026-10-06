@@ -1,0 +1,83 @@
+EfficientNet-B0 Results
+=======================
+
+Test Images: 480
+
+Overall Test Results
+--------------------
+Accuracy:  0.9833
+Precision: 0.9836
+Recall:    0.9833
+F1 Score:  0.9833
+
+Per-Class Results
+-----------------
+              precision    recall  f1-score   support
+
+       clean     1.0000    1.0000    1.0000        80
+defocus_blur     1.0000    0.9750    0.9873        80
+    gaussian     0.9870    0.9500    0.9682        80
+     impulse     0.9753    0.9875    0.9814        80
+ motion_blur     0.9756    1.0000    0.9877        80
+        shot     0.9634    0.9875    0.9753        80
+
+    accuracy                         0.9833       480
+   macro avg     0.9836    0.9833    0.9833       480
+weighted avg     0.9836    0.9833    0.9833       480
+
+Confusion Matrix
+----------------
+Class order: ['clean', 'defocus_blur', 'gaussian', 'impulse', 'motion_blur', 'shot']
+
+[[80  0  0  0  0  0]
+ [ 0 78  0  0  2  0]
+ [ 0  0 76  2  0  2]
+ [ 0  0  0 79  0  1]
+ [ 0  0  0  0 80  0]
+ [ 0  0  1  0  0 79]]
+
+Accuracy by Severity
+--------------------
+Severity 1: 77/80 (0.9625)
+Severity 2: 79/80 (0.9875)
+Severity 3: 80/80 (1.0000)
+Severity 4: 78/80 (0.9750)
+Severity 5: 78/80 (0.9750)
+
+Accuracy by Corruption + Severity
+-------------------------
+
+DEFOCUS_BLUR
+Severity 1: 14/16 (0.8750)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+GAUSSIAN
+Severity 1: 16/16 (1.0000)
+Severity 2: 15/16 (0.9375)
+Severity 3: 16/16 (1.0000)
+Severity 4: 14/16 (0.8750)
+Severity 5: 15/16 (0.9375)
+
+IMPULSE
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 15/16 (0.9375)
+
+MOTION_BLUR
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+SHOT
+Severity 1: 15/16 (0.9375)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)

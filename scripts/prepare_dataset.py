@@ -3,53 +3,74 @@ import random
 import shutil
 from collections import defaultdict
 
-# -----------------------------
-# SETTINGS
-# -----------------------------
-
-# CHANGE THIS to your actual OPV2V test folder
 SOURCE_DIR = Path("/Users/connorlopez/Desktop/Capstone/dataset/test")
-
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_DIR / "data"
 
 RANDOM_SEED = 42
 
-TRAIN_FRAMES = 200
-VAL_FRAMES = 25
-TEST_FRAMES = 25
+# 200 frames per class
+TRAIN_FRAMES_PER_CLASS = 160
+VAL_FRAMES_PER_CLASS = 20
+TEST_FRAMES_PER_CLASS = 20
 
-TOTAL_FRAMES = TRAIN_FRAMES + VAL_FRAMES + TEST_FRAMES
+CLASSES = [
+    "clean",
+    "gaussian",
+    "shot",
+    "impulse",
+    "motion_blur",
+    "defocus_blur",
+]
+
+FRAMES_PER_CLASS = (
+    TRAIN_FRAMES_PER_CLASS
+    + VAL_FRAMES_PER_CLASS
+    + TEST_FRAMES_PER_CLASS
+)
+
+TOTAL_FRAMES = FRAMES_PER_CLASS * len(CLASSES)
 
 
 # -----------------------------
-# FIND AND GROUP IMAGES BY FRAME
+# FIND ALL PNG IMAGES
 # -----------------------------
 
-all_images = list(SOURCE_DIR.rglob("*.png"))
+all_images = list(
+    SOURCE_DIR.rglob("*.png")
+)
 
-print(f"Found {len(all_images)} PNG images.")
+print(
+    f"Found {len(all_images)} PNG images."
+)
+
+
+# -----------------------------
+# GROUP IMAGES BY FRAME
+# -----------------------------
 
 frames = defaultdict(list)
 
 for image_path in all_images:
-    # Example:
-    # 000242_camera2.png -> 000242
-    frame_number = image_path.stem.split("_camera")[0]
 
-    # Include the parent folders because frame numbers can repeat
-    # in different OPV2V scenes/vehicles.
+    frame_number = (
+        image_path.stem.split("_camera")[0]
+    )
+
     frame_id = (
         image_path.parent.parent.name,
         image_path.parent.name,
         frame_number,
     )
 
-    frames[frame_id].append(image_path)
+    frames[frame_id].append(
+        image_path
+    )
 
 
 # -----------------------------
-# KEEP COMPLETE 4-CAMERA FRAMES
+# KEEP ONLY COMPLETE
+# 4-CAMERA FRAMES
 # -----------------------------
 
 complete_frames = {
@@ -58,14 +79,25 @@ complete_frames = {
     if len(images) == 4
 }
 
-print(f"Found {len(complete_frames)} complete 4-camera frames.")
-
-if len(complete_frames) < TOTAL_FRAMES:
-    raise ValueError("Not enough complete frames.")
+print(
+    f"Found {len(complete_frames)} "
+    f"complete 4-camera frames."
+)
 
 
 # -----------------------------
-# RANDOMLY SELECT 250 FRAMES
+# CHECK THAT WE HAVE ENOUGH
+# -----------------------------
+
+if len(complete_frames) < TOTAL_FRAMES:
+
+    raise ValueError(
+        "Not enough complete frames."
+    )
+
+
+# -----------------------------
+# RANDOMLY SELECT FRAMES
 # -----------------------------
 
 random.seed(RANDOM_SEED)
@@ -75,93 +107,221 @@ selected_frame_ids = random.sample(
     TOTAL_FRAMES
 )
 
-random.shuffle(selected_frame_ids)
-
-train_frames = selected_frame_ids[:TRAIN_FRAMES]
-
-val_frames = selected_frame_ids[
-    TRAIN_FRAMES:
-    TRAIN_FRAMES + VAL_FRAMES
-]
-
-test_frames = selected_frame_ids[
-    TRAIN_FRAMES + VAL_FRAMES:
-]
+random.shuffle(
+    selected_frame_ids
+)
 
 
 # -----------------------------
-# CLEAR OLD DATA
+# ASSIGN UNIQUE FRAMES
+# TO EACH CLASS
+# -----------------------------
+
+class_frames = {}
+
+start = 0
+
+for class_name in CLASSES:
+
+    end = start + FRAMES_PER_CLASS
+
+    class_frames[class_name] = (
+        selected_frame_ids[start:end]
+    )
+
+    start = end
+
+
+# -----------------------------
+# SPLIT EACH CLASS INTO
+# TRAIN / VAL / TEST
+# -----------------------------
+
+dataset_splits = {}
+
+for class_name in CLASSES:
+
+    frame_ids = class_frames[class_name]
+
+    train_frames = (
+        frame_ids[
+            :TRAIN_FRAMES_PER_CLASS
+        ]
+    )
+
+    val_start = (
+        TRAIN_FRAMES_PER_CLASS
+    )
+
+    val_end = (
+        TRAIN_FRAMES_PER_CLASS
+        + VAL_FRAMES_PER_CLASS
+    )
+
+    val_frames = (
+        frame_ids[
+            val_start:val_end
+        ]
+    )
+
+    test_frames = (
+        frame_ids[val_end:]
+    )
+
+    dataset_splits[class_name] = {
+        "train": train_frames,
+        "val": val_frames,
+        "test": test_frames,
+    }
+
+
+# -----------------------------
+# DELETE OLD DATA FOLDER
 # -----------------------------
 
 if DATA_DIR.exists():
-    shutil.rmtree(DATA_DIR)
 
-
-# -----------------------------
-# COPY COMPLETE FRAMES
-# -----------------------------
-
-splits = {
-    "train": train_frames,
-    "val": val_frames,
-    "test": test_frames,
-}
-
-for split_name, frame_ids in splits.items():
-
-    output_dir = DATA_DIR / split_name / "clean"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    image_counter = 0
-
-    for frame_id in frame_ids:
-
-        images = sorted(complete_frames[frame_id])
-
-        scene, vehicle, frame_number = frame_id
-
-        for image_path in images:
-
-            # Preserve enough information to identify the source
-            new_name = (
-                f"{scene}_{vehicle}_"
-                f"{image_path.name}"
-            )
-
-            shutil.copy2(
-                image_path,
-                output_dir / new_name
-            )
-
-            image_counter += 1
-
-    print(
-        f"{split_name}: "
-        f"{len(frame_ids)} frames, "
-        f"{image_counter} images"
+    shutil.rmtree(
+        DATA_DIR
     )
 
 
 # -----------------------------
-# VERIFY NO FRAME OVERLAP
+# CREATE NEW DATASET
 # -----------------------------
 
-train_set = set(train_frames)
-val_set = set(val_frames)
-test_set = set(test_frames)
+for class_name in CLASSES:
 
-assert train_set.isdisjoint(val_set)
-assert train_set.isdisjoint(test_set)
-assert val_set.isdisjoint(test_set)
+    for split_name in [
+        "train",
+        "val",
+        "test",
+    ]:
+
+        output_dir = (
+            DATA_DIR
+            / split_name
+            / class_name
+        )
+
+        output_dir.mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        frame_ids = (
+            dataset_splits[
+                class_name
+            ][split_name]
+        )
+
+        image_counter = 0
+
+        for frame_id in frame_ids:
+
+            images = sorted(
+                complete_frames[
+                    frame_id
+                ]
+            )
+
+            scene = frame_id[0]
+            vehicle = frame_id[1]
+
+            for image_path in images:
+
+                new_name = (
+                    f"{scene}_"
+                    f"{vehicle}_"
+                    f"{image_path.name}"
+                )
+
+                shutil.copy2(
+                    image_path,
+                    output_dir
+                    / new_name
+                )
+
+                image_counter += 1
+
+        print(
+            f"{split_name}/"
+            f"{class_name}: "
+            f"{len(frame_ids)} frames, "
+            f"{image_counter} images"
+        )
+
+
+# -----------------------------
+# VERIFY NO FRAME REUSE
+# -----------------------------
+
+all_used_frames = []
+
+for class_name in CLASSES:
+
+    for split_name in [
+        "train",
+        "val",
+        "test",
+    ]:
+
+        all_used_frames.extend(
+            dataset_splits[
+                class_name
+            ][split_name]
+        )
+
+assert (
+    len(all_used_frames)
+    ==
+    len(set(all_used_frames))
+)
 
 
 # -----------------------------
 # SUMMARY
 # -----------------------------
 
-print("\nDataset created successfully!")
-print(f"Training:   {TRAIN_FRAMES} frames / {TRAIN_FRAMES * 4} images")
-print(f"Validation: {VAL_FRAMES} frames / {VAL_FRAMES * 4} images")
-print(f"Testing:    {TEST_FRAMES} frames / {TEST_FRAMES * 4} images")
-print(f"Total:      {TOTAL_FRAMES} frames / {TOTAL_FRAMES * 4} images")
-print("\nVerified: No frame overlap between splits.")
+print(
+    "\nDataset created successfully!"
+)
+
+print(
+    f"\nClasses: {len(CLASSES)}"
+)
+
+print(
+    f"Frames per class: "
+    f"{FRAMES_PER_CLASS}"
+)
+
+print(
+    f"Images per class: "
+    f"{FRAMES_PER_CLASS * 4}"
+)
+
+print(
+    "\nTraining images:   "
+    f"{TRAIN_FRAMES_PER_CLASS * 4 * len(CLASSES)}"
+)
+
+print(
+    "Validation images: "
+    f"{VAL_FRAMES_PER_CLASS * 4 * len(CLASSES)}"
+)
+
+print(
+    "Testing images:    "
+    f"{TEST_FRAMES_PER_CLASS * 4 * len(CLASSES)}"
+)
+
+print(
+    "Total images:      "
+    f"{TOTAL_FRAMES * 4}"
+)
+
+print(
+    "\nVerified: "
+    "Every source frame is used only once."
+)

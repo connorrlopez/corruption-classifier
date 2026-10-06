@@ -1,0 +1,83 @@
+ResNet-18 Results
+=======================
+
+Test Images: 480
+
+Overall Test Results
+--------------------
+Accuracy:  0.9688
+Precision: 0.9694
+Recall:    0.9688
+F1 Score:  0.9689
+
+Per-Class Results
+-----------------
+              precision    recall  f1-score   support
+
+       clean     1.0000    0.9875    0.9937        80
+defocus_blur     1.0000    1.0000    1.0000        80
+    gaussian     0.9114    0.9000    0.9057        80
+     impulse     1.0000    0.9750    0.9873        80
+ motion_blur     1.0000    1.0000    1.0000        80
+        shot     0.9048    0.9500    0.9268        80
+
+    accuracy                         0.9688       480
+   macro avg     0.9694    0.9688    0.9689       480
+weighted avg     0.9694    0.9688    0.9689       480
+
+Confusion Matrix
+----------------
+Class order: ['clean', 'defocus_blur', 'gaussian', 'impulse', 'motion_blur', 'shot']
+
+[[79  0  1  0  0  0]
+ [ 0 80  0  0  0  0]
+ [ 0  0 72  0  0  8]
+ [ 0  0  2 78  0  0]
+ [ 0  0  0  0 80  0]
+ [ 0  0  4  0  0 76]]
+
+Accuracy by Severity
+--------------------
+Severity 1: 72/80 (0.9000)
+Severity 2: 79/80 (0.9875)
+Severity 3: 77/80 (0.9625)
+Severity 4: 79/80 (0.9875)
+Severity 5: 79/80 (0.9875)
+
+Accuracy by Corruption + Severity
+-------------------------
+
+DEFOCUS_BLUR
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+GAUSSIAN
+Severity 1: 9/16 (0.5625)
+Severity 2: 16/16 (1.0000)
+Severity 3: 15/16 (0.9375)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+IMPULSE
+Severity 1: 15/16 (0.9375)
+Severity 2: 16/16 (1.0000)
+Severity 3: 15/16 (0.9375)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+MOTION_BLUR
+Severity 1: 16/16 (1.0000)
+Severity 2: 16/16 (1.0000)
+Severity 3: 16/16 (1.0000)
+Severity 4: 16/16 (1.0000)
+Severity 5: 16/16 (1.0000)
+
+SHOT
+Severity 1: 16/16 (1.0000)
+Severity 2: 15/16 (0.9375)
+Severity 3: 15/16 (0.9375)
+Severity 4: 15/16 (0.9375)
+Severity 5: 15/16 (0.9375)

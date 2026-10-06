@@ -1,81 +1,115 @@
 # Image Corruption Classification
 
-This project investigates the ability of machine learning models to detect corruption in images. The project is part of an honors capstone focused on comparing traditional computer vision models with vision-language models (VLMs) for image corruption detection.
+This project investigates the ability of machine learning models to identify different types of image corruption. The project is part of an honors capstone focused on comparing traditional computer vision models with vision-language models (VLMs) for image corruption classification.
 
 ## Current Experiment
 
-The current experiment uses EfficientNet-B0 to perform binary image classification between:
+The current experiment performs multiclass image classification using images from the OPV2V dataset.
 
-- Clean images
-- Images corrupted with Gaussian noise
+The six classes are:
 
-The images are taken from the OPV2V dataset. A total of 1,000 clean images and 1,000 Gaussian-corrupted images are used.
+- Clean
+- Gaussian noise
+- Shot noise
+- Impulse noise
+- Motion blur
+- Defocus blur
+
+A total of 4,800 images are used, with 800 images in each class.
 
 The dataset is divided into:
 
-- Training: 800 clean + 800 Gaussian
-- Validation: 100 clean + 100 Gaussian
-- Testing: 100 clean + 100 Gaussian
+- Training: 3,840 images
+- Validation: 480 images
+- Testing: 480 images
 
-Source frames are kept within a single dataset split to prevent data leakage between training, validation, and testing.
+Each class contains:
 
-## Gaussian Noise Generation
+- 640 training images
+- 80 validation images
+- 80 testing images
 
-Gaussian noise is added to the clean images using the `imagecorruptions` Python library.
+The images originate from complete four-camera frames. Each source frame is assigned to only one class and one dataset split. This prevents the same source frame from appearing in multiple classes or across training, validation, and testing.
 
-Each clean image is copied and corrupted using Gaussian noise with a randomly selected severity level from 1 to 5. A fixed random seed of 42 is used to make the corruption process reproducible.
+## Corruption Generation
 
-The severity assigned to each corrupted image is recorded in `gaussian_severities.csv`.
+Image corruptions are generated using the `imagecorruptions` Python library.
 
-This produces 1,000 Gaussian-corrupted images corresponding to the 1,000 original clean images.
+Five corruption types are applied:
 
-## Model Training
+- Gaussian noise
+- Shot noise
+- Impulse noise
+- Motion blur
+- Defocus blur
 
-EfficientNet-B0 is used as the traditional computer vision model for the initial classification experiment.
+Each corruption uses severity levels from 1 through 5.
 
-The model uses pretrained ImageNet weights through TorchVision. The original EfficientNet-B0 classification layer, which predicts 1,000 ImageNet classes, is replaced with a new classification layer containing two outputs:
+For every corruption class, severity levels are evenly distributed:
 
-- Clean
-- Gaussian
+- Training: 128 images per severity
+- Validation: 16 images per severity
+- Testing: 16 images per severity
 
-The entire model is fine-tuned on the training dataset.
+A fixed random seed of 42 is used during dataset preparation and corruption assignment for reproducibility.
+
+Information about each corrupted image, including its split, corruption type, and severity, is stored in `corruption_metadata.csv`.
+
+## Machine Learning Models
+
+Three convolutional neural network models are currently evaluated:
+
+- EfficientNet-B0
+- ResNet-18
+- DenseNet-121
+
+Each model uses pretrained ImageNet weights provided through TorchVision. The original classification layer is replaced with a new classification layer containing six outputs corresponding to the six image classes.
+
+The models are fine-tuned using the same dataset and general training configuration.
 
 ### Training Configuration
 
-- Model: EfficientNet-B0
-- Pretrained weights: ImageNet
 - Optimizer: Adam
 - Learning rate: 0.0001
 - Loss function: Cross-Entropy Loss
 - Batch size: 32
 - Epochs: 5
-- Device: Apple MPS when available, otherwise CPU
+- Training images: 3,840
+- Validation images: 480
+- Testing images: 480
+- Device: Apple MPS when available, otherwise CUDA or CPU
 
-After each epoch, the model is evaluated on the validation set. The model with the lowest validation loss is saved as `best_model.pth`.
+The model checkpoint with the highest validation accuracy is saved for final testing.
 
 ## Results
 
-The best trained model was evaluated on the held-out test set containing 200 images: 100 clean images and 100 Gaussian-corrupted images.
+All three models are evaluated on the same held-out test set containing 480 images.
 
-The model achieved the following results:
+| Model | Best Validation Accuracy | Test Accuracy | Precision | Recall | F1 Score |
+|---|---:|---:|---:|---:|---:|
+| DenseNet-121 | 98.54% | 99.17% | 99.19% | 99.17% | 99.17% |
+| EfficientNet-B0 | 98.33% | 98.33% | 98.36% | 98.33% | 98.33% |
+| ResNet-18 | 96.46% | 96.88% | 96.94% | 96.88% | 96.89% |
 
-| Metric | Score |
+DenseNet-121 achieved the highest overall test accuracy, correctly classifying 476 of the 480 test images.
+
+Detailed results and confusion matrices for each model are stored in the `results/` directory.
+
+## Severity Analysis
+
+Performance is also evaluated according to corruption severity.
+
+DenseNet-121 achieved the following overall accuracy across the five corruption types at each severity level:
+
+| Severity | Accuracy |
 |---|---:|
-| Accuracy | 1.0000 |
-| Precision | 1.0000 |
-| Recall | 1.0000 |
-| F1 Score | 1.0000 |
+| 1 | 97.50% |
+| 2 | 98.75% |
+| 3 | 100.00% |
+| 4 | 100.00% |
+| 5 | 100.00% |
 
-### Confusion Matrix
-
-| | Predicted Clean | Predicted Gaussian |
-|---|---:|---:|
-| Actual Clean | 100 | 0 |
-| Actual Gaussian | 0 | 100 |
-
-EfficientNet-B0 correctly classified all 200 test images, resulting in zero false positives and zero false negatives.
-
-These results apply specifically to the current binary classification experiment using clean and Gaussian-corrupted OPV2V images. Additional corruption types and experiments will be evaluated in future stages of the project.
+These results show that lower-severity corruptions can be more difficult to distinguish, while DenseNet-121 correctly classified all corrupted test images at severity levels 3 through 5.
 
 ## Project Structure
 
@@ -83,33 +117,84 @@ These results apply specifically to the current binary classification experiment
 corruption-classifier/
 ├── scripts/
 │   ├── prepare_dataset.py
-│   ├── add_gaussian_noise.py
-│   ├── train_classifier.py
-│   └── evaluate_classifier.py
+│   ├── add_corruptions.py
+│   ├── train_efficientnet.py
+│   ├── evaluate_efficientnet.py
+│   ├── train_resnet18.py
+│   ├── evaluate_resnet18.py
+│   ├── train_densenet121.py
+│   └── evaluate_densenet121.py
+├── results/
+│   ├── efficientnet_results.txt
+│   ├── efficientnet_confusion_matrix.png
+│   ├── resnet18_results.txt
+│   ├── resnet18_confusion_matrix.png
+│   ├── densenet121_results.txt
+│   └── densenet121_confusion_matrix.png
 ├── .gitignore
 ├── README.md
 └── requirements.txt
-'''
+```
+
+The dataset and trained model files are excluded from GitHub because of their size.
 
 ## Setup
 
-Create and activate a Python virtual environment, then install the required packages:
+Create and activate a Python virtual environment:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
+
+Install the required packages:
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Running the Experiment
+## Preparing the Dataset
 
-The scripts should be run from the root of the project in the following order:
+Run the dataset preparation script:
 
 ```bash
 python scripts/prepare_dataset.py
-python scripts/add_gaussian_noise.py
-python scripts/train_classifier.py
-python scripts/evaluate_classifier.py
 ```
 
-The first two scripts prepare the dataset and generate the corrupted images. The training script fine-tunes EfficientNet-B0 and saves the best model. The evaluation script loads the saved model and reports its performance on the held-out test set.
+Then generate the corrupted images:
+
+```bash
+python scripts/add_corruptions.py
+```
+
+These scripts create the balanced multiclass dataset and generate the five corruption types.
+
+## Training the Models
+
+Train each model individually:
+
+```bash
+python scripts/train_efficientnet.py
+python scripts/train_resnet18.py
+python scripts/train_densenet121.py
+```
+
+Each script fine-tunes a pretrained model and saves the checkpoint with the highest validation accuracy.
+
+## Evaluating the Models
+
+Evaluate each trained model:
+
+```bash
+python scripts/evaluate_efficientnet.py
+python scripts/evaluate_resnet18.py
+python scripts/evaluate_densenet121.py
+```
+
+The evaluation scripts calculate overall accuracy, precision, recall, F1 score, per-class performance, confusion matrices, and performance by corruption severity.
+
+Evaluation results and confusion matrix images are saved in the `results/` directory.
+
+## Current Status
+
+The current stage establishes machine learning baselines for image corruption classification. Future stages of the capstone will evaluate vision-language models on image corruption tasks and compare their performance with the traditional machine learning models.
