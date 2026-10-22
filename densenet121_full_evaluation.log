@@ -1,0 +1,104 @@
+/Users/connorlopez/Desktop/Capstone/corruption-classifier/.venv/lib/python3.13/site-packages/imagecorruptions/corruptions.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+Using device: mps
+Classes: ['clean', 'gaussian', 'shot', 'impulse', 'motion_blur', 'defocus_blur']
+Testing images: 23944
+Testing batches: 749
+
+Starting evaluation...
+Processed 100/749 batches
+Processed 200/749 batches
+Processed 300/749 batches
+Processed 400/749 batches
+Processed 500/749 batches
+Processed 600/749 batches
+Processed 700/749 batches
+
+DenseNet-121 Full Dataset Results
+===================================
+
+Test Images: 23944
+
+Overall Test Results
+--------------------
+Accuracy:  0.9979
+Precision: 0.9979
+Recall:    0.9979
+F1 Score:  0.9979
+
+Per-Class Results
+-----------------
+              precision    recall  f1-score   support
+
+       clean     1.0000    0.9992    0.9996      3992
+    gaussian     0.9908    0.9982    0.9945      3992
+        shot     0.9972    0.9912    0.9942      3992
+     impulse     1.0000    0.9990    0.9995      3992
+ motion_blur     0.9995    0.9997    0.9996      3988
+defocus_blur     1.0000    1.0000    1.0000      3988
+
+    accuracy                         0.9979     23944
+   macro avg     0.9979    0.9979    0.9979     23944
+weighted avg     0.9979    0.9979    0.9979     23944
+
+Confusion Matrix
+----------------
+Rows = Actual, Columns = Predicted
+Class order: ['clean', 'gaussian', 'shot', 'impulse', 'motion_blur', 'defocus_blur']
+[[3989    0    1    0    2    0]
+ [   0 3985    7    0    0    0]
+ [   0   35 3957    0    0    0]
+ [   0    2    2 3988    0    0]
+ [   0    0    1    0 3987    0]
+ [   0    0    0    0    0 3988]]
+
+Accuracy by Severity
+--------------------
+Severity 1: 3965/4000 (0.9912)
+Severity 2: 3997/4000 (0.9992)
+Severity 3: 3992/3992 (1.0000)
+Severity 4: 3980/3980 (1.0000)
+Severity 5: 3971/3980 (0.9977)
+
+Accuracy by Corruption + Severity
+---------------------------------
+
+GAUSSIAN
+  Severity 1: 800/800 (1.0000)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 800/800 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 789/796 (0.9912)
+
+SHOT
+  Severity 1: 768/800 (0.9600)
+  Severity 2: 797/800 (0.9962)
+  Severity 3: 800/800 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 796/796 (1.0000)
+
+IMPULSE
+  Severity 1: 798/800 (0.9975)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 800/800 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 794/796 (0.9975)
+
+MOTION_BLUR
+  Severity 1: 799/800 (0.9988)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 796/796 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 796/796 (1.0000)
+
+DEFOCUS_BLUR
+  Severity 1: 800/800 (1.0000)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 796/796 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 796/796 (1.0000)
+
+Text results saved to: /Users/connorlopez/Desktop/Capstone/corruption-classifier/results/densenet121_full_results.txt
+Confusion matrix saved to: /Users/connorlopez/Desktop/Capstone/corruption-classifier/results/densenet121_full_confusion_matrix.png
+
+Evaluation complete!

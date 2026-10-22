@@ -1,0 +1,43 @@
+/Users/connorlopez/Desktop/Capstone/corruption-classifier/.venv/lib/python3.13/site-packages/imagecorruptions/corruptions.py:17: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import resource_filename
+Using device: mps
+
+Classes:
+['clean', 'gaussian', 'shot', 'impulse', 'motion_blur', 'defocus_blur']
+
+Class mapping:
+{'clean': 0, 'gaussian': 1, 'shot': 2, 'impulse': 3, 'motion_blur': 4, 'defocus_blur': 5}
+
+Training images: 82992
+Validation images: 41912
+Training batches: 2594
+Validation batches: 1310
+
+Number of output classes: 6
+
+Epoch 1/5
+Train Loss: 0.1214 | Train Accuracy: 0.9567
+Val Loss: 0.0088 | Val Accuracy: 0.9970
+Best model saved.
+
+Epoch 2/5
+Train Loss: 0.0181 | Train Accuracy: 0.9942
+Val Loss: 0.0095 | Val Accuracy: 0.9970
+
+Epoch 3/5
+Train Loss: 0.0121 | Train Accuracy: 0.9961
+Val Loss: 0.0044 | Val Accuracy: 0.9986
+Best model saved.
+
+Epoch 4/5
+Train Loss: 0.0080 | Train Accuracy: 0.9974
+Val Loss: 0.0047 | Val Accuracy: 0.9982
+
+Epoch 5/5
+Train Loss: 0.0069 | Train Accuracy: 0.9977
+Val Loss: 0.0031 | Val Accuracy: 0.9990
+Best model saved.
+
+Training complete.
+Best validation accuracy: 0.9990
+Best model saved to: /Users/connorlopez/Desktop/Capstone/corruption-classifier/efficientnet_full_best_model.pth

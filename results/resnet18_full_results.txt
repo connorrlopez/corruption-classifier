@@ -1,0 +1,83 @@
+ResNet-18 Full Dataset Results
+===================================
+
+Test Images: 23944
+
+Overall Test Results
+--------------------
+Accuracy:  0.9974
+Precision: 0.9974
+Recall:    0.9974
+F1 Score:  0.9974
+
+Per-Class Results
+-----------------
+              precision    recall  f1-score   support
+
+       clean     1.0000    0.9992    0.9996      3992
+    gaussian     0.9937    0.9930    0.9934      3992
+        shot     0.9923    0.9965    0.9944      3992
+     impulse     0.9997    0.9962    0.9980      3992
+ motion_blur     0.9987    1.0000    0.9994      3988
+defocus_blur     1.0000    0.9995    0.9997      3988
+
+    accuracy                         0.9974     23944
+   macro avg     0.9974    0.9974    0.9974     23944
+weighted avg     0.9974    0.9974    0.9974     23944
+
+Confusion Matrix
+----------------
+Rows = Actual, Columns = Predicted
+Class order: ['clean', 'gaussian', 'shot', 'impulse', 'motion_blur', 'defocus_blur']
+[[3989    0    0    0    3    0]
+ [   0 3964   27    1    0    0]
+ [   0   14 3978    0    0    0]
+ [   0   11    4 3977    0    0]
+ [   0    0    0    0 3988    0]
+ [   0    0    0    0    2 3986]]
+
+Accuracy by Severity
+--------------------
+Severity 1: 3978/4000 (0.9945)
+Severity 2: 3994/4000 (0.9985)
+Severity 3: 3990/3992 (0.9995)
+Severity 4: 3972/3980 (0.9980)
+Severity 5: 3959/3980 (0.9947)
+
+Accuracy by Corruption + Severity
+---------------------------------
+
+GAUSSIAN
+  Severity 1: 798/800 (0.9975)
+  Severity 2: 795/800 (0.9938)
+  Severity 3: 799/800 (0.9988)
+  Severity 4: 792/796 (0.9950)
+  Severity 5: 780/796 (0.9799)
+
+SHOT
+  Severity 1: 790/800 (0.9875)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 799/800 (0.9988)
+  Severity 4: 793/796 (0.9962)
+  Severity 5: 796/796 (1.0000)
+
+IMPULSE
+  Severity 1: 792/800 (0.9900)
+  Severity 2: 799/800 (0.9988)
+  Severity 3: 800/800 (1.0000)
+  Severity 4: 795/796 (0.9987)
+  Severity 5: 791/796 (0.9937)
+
+MOTION_BLUR
+  Severity 1: 800/800 (1.0000)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 796/796 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 796/796 (1.0000)
+
+DEFOCUS_BLUR
+  Severity 1: 798/800 (0.9975)
+  Severity 2: 800/800 (1.0000)
+  Severity 3: 796/796 (1.0000)
+  Severity 4: 796/796 (1.0000)
+  Severity 5: 796/796 (1.0000)
