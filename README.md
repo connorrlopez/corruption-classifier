@@ -158,13 +158,13 @@ pip install -r requirements.txt
 Run the dataset preparation script:
 
 ```bash
-python scripts/prepare_dataset.py
+python scripts/data/prepare_dataset.py
 ```
 
 Then generate the corrupted images:
 
 ```bash
-python scripts/add_corruptions.py
+python scripts/data/add_corruptions.py
 ```
 
 These scripts create the balanced multiclass dataset and generate the five corruption types.
@@ -174,9 +174,9 @@ These scripts create the balanced multiclass dataset and generate the five corru
 Train each model individually:
 
 ```bash
-python scripts/train_efficientnet.py
-python scripts/train_resnet18.py
-python scripts/train_densenet121.py
+python scripts/cnn/train_efficientnet.py
+python scripts/cnn/train_resnet18.py
+python scripts/cnn/train_densenet121.py
 ```
 
 Each script fine-tunes a pretrained model and saves the checkpoint with the highest validation accuracy.
@@ -186,9 +186,9 @@ Each script fine-tunes a pretrained model and saves the checkpoint with the high
 Evaluate each trained model:
 
 ```bash
-python scripts/evaluate_efficientnet.py
-python scripts/evaluate_resnet18.py
-python scripts/evaluate_densenet121.py
+python scripts/cnn/evaluate_efficientnet.py
+python scripts/cnn/evaluate_resnet18.py
+python scripts/cnn/evaluate_densenet121.py
 ```
 
 The evaluation scripts calculate overall accuracy, precision, recall, F1 score, per-class performance, confusion matrices, and performance by corruption severity.

@@ -5,8 +5,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.models import resnet18, ResNet18_Weights
 
-from full_dataset_loader import FullCorruptionDataset
-
+from scripts.data.full_dataset_loader import FullCorruptionDataset
 
 # -----------------------------
 # SETTINGS

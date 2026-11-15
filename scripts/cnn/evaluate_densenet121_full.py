@@ -4,7 +4,7 @@ from collections import defaultdict
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision.models import resnet18, ResNet18_Weights
+from torchvision.models import densenet121, DenseNet121_Weights
 
 from sklearn.metrics import (
     accuracy_score,
@@ -17,8 +17,7 @@ from sklearn.metrics import (
 
 import matplotlib.pyplot as plt
 
-from full_dataset_loader import FullCorruptionDataset
-
+from scripts.data.full_dataset_loader import FullCorruptionDataset
 
 # -----------------------------
 # SETTINGS
@@ -27,14 +26,14 @@ from full_dataset_loader import FullCorruptionDataset
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 TEST_CSV = PROJECT_DIR / "full_dataset" / "test.csv"
-MODEL_PATH = PROJECT_DIR / "resnet18_full_best_model.pth"
+MODEL_PATH = PROJECT_DIR / "densenet121_full_best_model.pth"
 
 RESULTS_DIR = PROJECT_DIR / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
-RESULTS_FILE = RESULTS_DIR / "resnet18_full_results.txt"
+RESULTS_FILE = RESULTS_DIR / "densenet121_full_results.txt"
 CONFUSION_MATRIX_FILE = (
-    RESULTS_DIR / "resnet18_full_confusion_matrix.png"
+    RESULTS_DIR / "densenet121_full_confusion_matrix.png"
 )
 
 BATCH_SIZE = 32
@@ -58,7 +57,7 @@ print(f"Using device: {device}", flush=True)
 # DATASET
 # -----------------------------
 
-weights = ResNet18_Weights.DEFAULT
+weights = DenseNet121_Weights.DEFAULT
 
 test_dataset = FullCorruptionDataset(
     TEST_CSV,
@@ -82,10 +81,10 @@ print(f"Testing batches: {len(test_loader)}")
 # MODEL
 # -----------------------------
 
-model = resnet18(weights=None)
+model = densenet121(weights=None)
 
-model.fc = nn.Linear(
-    model.fc.in_features,
+model.classifier = nn.Linear(
+    model.classifier.in_features,
     len(classes)
 )
 
@@ -209,7 +208,7 @@ for index, record in enumerate(test_dataset.records):
 # -----------------------------
 
 lines = [
-    "ResNet-18 Full Dataset Results",
+    "DenseNet-121 Full Dataset Results",
     "===================================",
     "",
     f"Test Images: {len(test_dataset)}",
@@ -313,7 +312,7 @@ ax.set_yticklabels(display_names)
 
 ax.set_xlabel("Predicted Class")
 ax.set_ylabel("Actual Class")
-ax.set_title("ResNet-18 Full Dataset Confusion Matrix")
+ax.set_title("DenseNet-121 Full Dataset Confusion Matrix")
 
 for i in range(len(classes)):
     for j in range(len(classes)):

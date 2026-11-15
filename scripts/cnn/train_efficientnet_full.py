@@ -3,25 +3,25 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision.models import densenet121, DenseNet121_Weights
+from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
 
-from full_dataset_loader import FullCorruptionDataset
-
+from scripts.data.full_dataset_loader import FullCorruptionDataset
 
 # -----------------------------
 # SETTINGS
 # -----------------------------
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_DIR / "full_dataset"
 
-TRAIN_CSV = PROJECT_DIR / "full_dataset" / "train.csv"
-VAL_CSV = PROJECT_DIR / "full_dataset" / "val.csv"
+TRAIN_CSV = DATA_DIR / "train.csv"
+VAL_CSV = DATA_DIR / "val.csv"
 
 BATCH_SIZE = 32
 EPOCHS = 5
 LEARNING_RATE = 0.0001
 
-MODEL_PATH = PROJECT_DIR / "densenet121_full_best_model.pth"
+MODEL_PATH = PROJECT_DIR / "efficientnet_full_best_model.pth"
 
 
 # -----------------------------
@@ -42,7 +42,7 @@ print(f"Using device: {device}")
 # IMAGE TRANSFORMS
 # -----------------------------
 
-weights = DenseNet121_Weights.DEFAULT
+weights = EfficientNet_B0_Weights.DEFAULT
 transform = weights.transforms()
 
 
@@ -94,12 +94,12 @@ print(f"Validation batches: {len(val_loader)}")
 # MODEL
 # -----------------------------
 
-model = densenet121(weights=weights)
+model = efficientnet_b0(weights=weights)
 
 number_of_classes = len(train_dataset.classes)
 
-model.classifier = nn.Linear(
-    model.classifier.in_features,
+model.classifier[1] = nn.Linear(
+    model.classifier[1].in_features,
     number_of_classes
 )
 
@@ -124,18 +124,19 @@ optimizer = torch.optim.Adam(
 # TRAINING
 # -----------------------------
 
-best_val_accuracy = 0.0
+best_val_accuracy = -1.0
 
 for epoch in range(EPOCHS):
 
+    # -------------------------
     # TRAIN
+    # -------------------------
+
     model.train()
 
     running_loss = 0.0
     correct = 0
     total = 0
-
-    print(f"\nEpoch {epoch + 1}/{EPOCHS}", flush=True)
 
     for images, labels in train_loader:
 
@@ -149,6 +150,7 @@ for epoch in range(EPOCHS):
         loss = criterion(outputs, labels)
 
         loss.backward()
+
         optimizer.step()
 
         running_loss += loss.item() * images.size(0)
@@ -161,7 +163,11 @@ for epoch in range(EPOCHS):
     train_loss = running_loss / total
     train_accuracy = correct / total
 
+
+    # -------------------------
     # VALIDATION
+    # -------------------------
+
     model.eval()
 
     val_running_loss = 0.0
@@ -184,32 +190,46 @@ for epoch in range(EPOCHS):
             _, predicted = torch.max(outputs, 1)
 
             val_total += labels.size(0)
-            val_correct += (predicted == labels).sum().item()
+
+            val_correct += (
+                predicted == labels
+            ).sum().item()
 
     val_loss = val_running_loss / val_total
     val_accuracy = val_correct / val_total
 
+
+    # -------------------------
     # RESULTS
+    # -------------------------
+
+    print(f"\nEpoch {epoch + 1}/{EPOCHS}")
+
     print(
         f"Train Loss: {train_loss:.4f} | "
-        f"Train Accuracy: {train_accuracy:.4f}",
-        flush=True
+        f"Train Accuracy: {train_accuracy:.4f}"
     )
 
     print(
         f"Val Loss: {val_loss:.4f} | "
-        f"Val Accuracy: {val_accuracy:.4f}",
-        flush=True
+        f"Val Accuracy: {val_accuracy:.4f}"
     )
 
+
+    # -------------------------
     # SAVE BEST MODEL
+    # -------------------------
+
     if val_accuracy > best_val_accuracy:
 
         best_val_accuracy = val_accuracy
 
-        torch.save(model.state_dict(), MODEL_PATH)
+        torch.save(
+            model.state_dict(),
+            MODEL_PATH
+        )
 
-        print("Best model saved.", flush=True)
+        print("Best model saved.")
 
 
 # -----------------------------
@@ -218,6 +238,12 @@ for epoch in range(EPOCHS):
 
 print("\nTraining complete.")
 
-print(f"Best validation accuracy: {best_val_accuracy:.4f}")
+print(
+    f"Best validation accuracy: "
+    f"{best_val_accuracy:.4f}"
+)
 
-print(f"Best model saved to: {MODEL_PATH}")
+print(
+    f"Best model saved to: "
+    f"{MODEL_PATH}"
+)

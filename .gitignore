@@ -1,7 +1,23 @@
-data/
+# Datasets
+/data/
+/corrupted_datasets/
+
+# Python environments
 .venv/
+.venv-vlm/
+
+# Python generated files
 __pycache__/
 *.pyc
-.DS_Store
+
+# Model checkpoints
 *.pth
-.vscode/
+*.pt
+*.safetensors
+
+# Experiment outputs
+/severity_results/
+*.log
+
+# System files
+.DS_Store
